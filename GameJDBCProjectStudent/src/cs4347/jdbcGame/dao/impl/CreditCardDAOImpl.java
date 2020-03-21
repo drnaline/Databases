@@ -15,10 +15,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import cs4347.jdbcGame.dao.CreditCardDAO;
 import cs4347.jdbcGame.entity.CreditCard;
+import cs4347.jdbcGame.entity.Game;
 import cs4347.jdbcGame.util.DAOException;
 
 public class CreditCardDAOImpl implements CreditCardDAO
@@ -63,20 +65,87 @@ public class CreditCardDAOImpl implements CreditCardDAO
     @Override
     public CreditCard retrieve(Connection connection, Long ccID) throws SQLException, DAOException
     {
-        return null;
+    	if (ccID == null) {
+            throw new DAOException("Trying to retrieve CreditCard with NULL ID");
+        }
+
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(selectSQL);
+            ps.setLong(1, ccID);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                return null;
+            }
+
+            CreditCard cc = extractCCFromRS(rs);
+            return cc;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
+    final static String selectforplayerSQL = "SELECT player.id,creditcard.id, player_id, cc_name, cc_number, security_code, exp_code FROM player, creditcard where player_id = player.id";
+
+    
     @Override
     public List<CreditCard> retrieveCreditCardsForPlayer(Connection connection, Long playerID)
             throws SQLException, DAOException
     {
-        return null;
-    }
+    	if (playerID == null) {
+            throw new DAOException("Trying to retrieve PlayerID with NULL ID");
+        }
+    	List<CreditCard> result = new ArrayList<CreditCard>();
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(selectforplayerSQL);
+            ps.setLong(1, playerID);
+            ResultSet rs = ps.executeQuery();
 
+            while (rs.next()) {
+                CreditCard cc = extractCCFromRS(rs);
+                result.add(cc);
+            }
+            return result;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
+  
+    }
+    
+    final static String updateSQL = "UPDATE creditcard SET cc_name = ?, cc_number = ?, exp_date = ?, security_code = ? WHERE player_id = ?;";
+    
     @Override
     public int update(Connection connection, CreditCard creditCard) throws SQLException, DAOException
     {
-        return 0;
+    	Long id = creditCard.getId();
+        if (id == null) {
+            throw new DAOException("Trying to update Game with NULL ID");
+        }
+
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(updateSQL);
+            ps.setString(1, creditCard.getCcName());
+            ps.setString(2, creditCard.getCcNumber());
+            ps.setString(3, creditCard.getExpDate());
+            ps.setLong(4, creditCard.getSecurityCode());
+            ps.setLong(5, id);
+
+            int rows = ps.executeUpdate();
+            return rows;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
@@ -95,6 +164,18 @@ public class CreditCardDAOImpl implements CreditCardDAO
     public int count(Connection connection) throws SQLException, DAOException
     {
         return 0;
+    }
+    private CreditCard extractCCFromRS(ResultSet rs) throws SQLException
+    {
+        CreditCard cc = new CreditCard();
+        cc.setId(rs.getLong("id"));
+        cc.setPlayerID(rs.getLong("player_id"));
+        cc.setCcName(rs.getString("cc_name"));
+        cc.setCcNumber(rs.getString("cc_number"));
+        cc.setSecurityCode(rs.getInt("security_code"));
+        cc.setExpDate(rs.getString("exp_date"));
+        
+        return cc;
     }
 
 }
