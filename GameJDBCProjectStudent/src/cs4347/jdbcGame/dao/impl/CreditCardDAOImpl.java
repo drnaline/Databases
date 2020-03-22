@@ -25,8 +25,7 @@ import cs4347.jdbcGame.util.DAOException;
 
 public class CreditCardDAOImpl implements CreditCardDAO
 {
-    private static final String insertSQL = "INSERT INTO creditcard(cc_name, cc_number, exp_date, security_code, player_id) "
-            + "VALUES(?,?,?,?,?);";
+    private static final String insertSQL = "INSERT INTO creditcard (cc_name, cc_number, exp_date, security_code, player_id) VALUES (?,?,?,?,?);";
 
     @Override
     public CreditCard create(Connection connection, CreditCard creditCard, Long playerID)
@@ -46,12 +45,14 @@ public class CreditCardDAOImpl implements CreditCardDAO
             ps.setInt(4, creditCard.getSecurityCode());
             ps.setLong(5, playerID);
             ps.executeUpdate();
-
+            
+            
             // Copy the assigned ID to the game instance.
             ResultSet keyRS = ps.getGeneratedKeys();
             keyRS.next();
             int lastKey = keyRS.getInt(1);
             creditCard.setId((long) lastKey);
+            creditCard.setPlayerID(playerID);
             return creditCard;
         }
         finally {
@@ -60,7 +61,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
             }
         }
     }
-    final static String selectSQL = "SELECT player.id,creditcard.id, player_id, cc_name, cc_number, security_code, exp_code FROM player, creditcard where player_id = ?";
+    final static String selectSQL = "SELECT id, player_id, cc_name, cc_number, security_code, exp_date FROM games.creditcard where id = ?;";
 
     @Override
     public CreditCard retrieve(Connection connection, Long ccID) throws SQLException, DAOException
@@ -88,7 +89,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
         }
     }
 
-    final static String selectforplayerSQL = "SELECT player.id,creditcard.id, player_id, cc_name, cc_number, security_code, exp_code FROM player, creditcard where player_id = player.id";
+    final static String selectforplayerSQL = "SELECT id, player_id, cc_name, cc_number, security_code, exp_date FROM games.creditcard where player_id = ?;";
 
     
     @Override
@@ -119,7 +120,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
   
     }
     
-    final static String updateSQL = "UPDATE creditcard SET cc_name = ?, cc_number = ?, exp_date = ?, security_code = ? WHERE player_id = ?;";
+    final static String updateSQL = "UPDATE creditcard SET cc_name = ?, cc_number = ?, exp_date = ?, security_code = ? WHERE id = ?;";
     
     @Override
     public int update(Connection connection, CreditCard creditCard) throws SQLException, DAOException
@@ -148,7 +149,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
         }
     }
 
-    final static String deleteSQL = "delete from creditcard where player_id = ?;";
+    final static String deleteSQL = "delete from games.creditcard where id = ?;";
 
     @Override
     public int delete(Connection connection, Long ccID) throws SQLException, DAOException

@@ -26,13 +26,13 @@ import cs4347.jdbcGame.util.DAOException;
 
 public class GamesOwnedDAOImpl implements GamesOwnedDAO
 {
-	private static final String insertSQL = "INSERT INTO gamesowned (id, player_id, game_id, purchase_date, purchase_price) VALUES (?, ?, ?, ?, ?);";
+	private static final String insertSQL = "INSERT INTO gamesowned (player_id, game_id, purchase_date, purchase_price) VALUES (?, ?, ?, ?);";
 
     @Override
     public GamesOwned create(Connection connection, GamesOwned gamesOwned) throws SQLException, DAOException
     {
     	 if (gamesOwned.getId() != null) {
-             throw new DAOException("Trying to insert gamesowned with NON-NULL ID");
+             throw new DAOException("Trying to insert GamesOwned with NON-NULL ID");
          }
 
          PreparedStatement ps = null;
@@ -41,8 +41,6 @@ public class GamesOwnedDAOImpl implements GamesOwnedDAO
              ps.setLong(1, gamesOwned.getPlayerID());
              ps.setLong(2, gamesOwned.getGameID());
              ps.setDate(3, new java.sql.Date(gamesOwned.getPurchaseDate().getTime()));
-             
-
              ps.setFloat(4, gamesOwned.getPurchasePrice());
              ps.executeUpdate();
 
@@ -60,12 +58,12 @@ public class GamesOwnedDAOImpl implements GamesOwnedDAO
          }
     }
 
-    final static String selectIDSQL = "SELECT id, player_id, games_id, purchase_date, purchase_price FROM player, gamesowned where id = ?";
+    final static String selectIDSQL = "SELECT id, player_id, games_id, purchase_date, purchase_price FROM gamesowned where id = ?";
     @Override
     public GamesOwned retrieveID(Connection connection, Long gamesOwnedID) throws SQLException, DAOException
     {
         if (gamesOwnedID == null) {
-            throw new DAOException("Trying to retrieve CreditCard with NULL ID");
+            throw new DAOException("Trying to retrieve GamesOwned with NULL ID");
         }
 
         PreparedStatement ps = null;

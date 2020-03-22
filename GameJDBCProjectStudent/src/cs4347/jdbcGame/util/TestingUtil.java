@@ -40,7 +40,12 @@ public class TestingUtil
 
     // This query retrieves all player IDs in the result set
     // e.g. "select id from player"
-    static String selectPlayerIDs = "To Be Added By Student";
+    
+    
+    
+    
+    //static String selectPlayerIDs = "To Be Added By Student";
+    static String selectPlayerIDs = "SELECT player_id from games.creditcard";
 
     /**
      * Return N current Player IDs for testing purposes.
