@@ -148,22 +148,73 @@ public class CreditCardDAOImpl implements CreditCardDAO
         }
     }
 
+    final static String deleteSQL = "delete from creditcard where player_id = ?;";
+
     @Override
     public int delete(Connection connection, Long ccID) throws SQLException, DAOException
     {
-        return 0;
+        if (ccID == null) {
+            throw new DAOException("Trying to delete Credit Card with NULL ID");
+        }
+
+    PreparedStatement ps = null;
+    try {
+        ps = connection.prepareStatement(deleteSQL);
+        ps.setLong(1, ccID);
+
+        int rows = ps.executeUpdate();
+        return rows;
+    }
+    finally {
+        if (ps != null && !ps.isClosed()) {
+            ps.close();
+        }
     }
 
+}
+    final static String deleteForPlayerSQL = "DELETE FROM creditcard WHERE PLAYER_ID = player.id";
+   
     @Override
     public int deleteForPlayer(Connection connection, Long playerID) throws SQLException, DAOException
     {
+        
+        if(playerID == null){
+            throw new DAOException("Attempting to delete credit card with NULL PLAYER ID");
+        }
+        PreparedStatement pStatement = null;
+        try{
+            pStatement = connection.prepareStatement(deleteForPlayerSQL);
+            pStatement.setLong(1, playerID);
+            pStatement.executeUpdate();
+        }
+        finally{
+            if(pStatement != null && !pStatement.isClosed()){
+                pStatement.close();
+            }
+        }
         return 0;
     }
 
+    final static String countSQL = "select count(*) from creditcard";
+    
     @Override
     public int count(Connection connection) throws SQLException, DAOException
     {
-        return 0;
+    	PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(countSQL);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new DAOException("No Count Returned");
+            }
+            int count = rs.getInt(1);
+            return count;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
     private CreditCard extractCCFromRS(ResultSet rs) throws SQLException
     {

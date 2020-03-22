@@ -198,17 +198,6 @@ public class PlayerDAOImpl implements PlayerDAO
         player.setEmail(rs.getString("email"));
         return player;
     }
-    private CreditCard extractCCFromRS(ResultSet rs) throws SQLException
-    {
-        CreditCard cc = new CreditCard();
-        cc.setId(rs.getLong("id"));
-        cc.setPlayerID(rs.getLong("player_id"));
-        cc.setCcName(rs.getString("cc_name"));
-        cc.setCcNumber(rs.getString("cc_number"));
-        cc.setSecurityCode(rs.getInt("security_code"));
-        cc.setExpDate(rs.getString("exp_date"));
-        
-        return cc;
-    }
+   
 
 }
