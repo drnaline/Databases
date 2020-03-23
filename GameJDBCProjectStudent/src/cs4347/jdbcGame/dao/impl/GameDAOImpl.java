@@ -186,7 +186,7 @@ public class GameDAOImpl implements GameDAO
         }
     }
 
-    final static String retrieveByRelDate = "select id,title,description,release_date,version from game where release_date between ? and ?";
+    final static String retrieveByRelDate = "select distinct id, title,description,release_date,version from games.game where release_date between ? and ?";
 
     @Override
     public List<Game> retrieveByReleaseDate(Connection connection, Date start, Date end)

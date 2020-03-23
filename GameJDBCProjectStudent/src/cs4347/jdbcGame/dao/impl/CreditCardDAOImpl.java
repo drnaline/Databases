@@ -127,7 +127,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
     {
     	Long id = creditCard.getId();
         if (id == null) {
-            throw new DAOException("Trying to update Game with NULL ID");
+            throw new DAOException("Trying to update credit with NULL ID");
         }
 
         PreparedStatement ps = null;
@@ -173,7 +173,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
     }
 
 }
-    final static String deleteForPlayerSQL = "DELETE FROM creditcard WHERE PLAYER_ID = player.id";
+    final static String deleteForPlayerSQL = "DELETE FROM games.creditcard WHERE player_id = ?";
    
     @Override
     public int deleteForPlayer(Connection connection, Long playerID) throws SQLException, DAOException

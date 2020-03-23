@@ -10,11 +10,14 @@
  */
 package cs4347.jdbcGame.services.impl;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
 
+import cs4347.jdbcGame.dao.GamesPlayedDAO;
+import cs4347.jdbcGame.dao.impl.GamesPlayedDAOImpl;
 import cs4347.jdbcGame.entity.GamesPlayed;
 import cs4347.jdbcGame.services.GamesPlayedService;
 import cs4347.jdbcGame.util.DAOException;
@@ -31,49 +34,204 @@ public class GamesPlayedServiceImpl implements GamesPlayedService
     @Override
     public GamesPlayed create(GamesPlayed gamesPlayed) throws DAOException, SQLException
     {
-        return null;
+        GamesPlayedDAO GmPlayDAOImpl = new GamesPlayedDAOImpl();
+        Connection connection = dataSource.getConnection();
+        try{
+            connection.setAutoCommit(false);
+            GamesPlayed gp = GmPlayDAOImpl.create(connection, gamesPlayed);
+            connection.commit();
+            return gp;
+        }
+        catch (Exception ex){
+            // Rollback will set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public GamesPlayed retrieveByID(long gamePlayedID) throws DAOException, SQLException
     {
-        return null;
+        GamesPlayedDAO GmPlayDAOImpl = new GamesPlayedDAOImpl();
+        Connection connection = dataSource.getConnection();
+        try{
+            connection.setAutoCommit(false);
+            GamesPlayed gp = GmPlayDAOImpl.retrieveID(connection, gamePlayedID);
+            connection.commit();
+            return gp;
+        }
+        catch (Exception ex){
+            // Rollback will set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public List<GamesPlayed> retrieveByPlayerGameID(long playerID, long gameID) throws DAOException, SQLException
     {
-        return null;
+        GamesPlayedDAO GmPlayDAOImpl = new GamesPlayedDAOImpl();
+        Connection connection = dataSource.getConnection();
+
+        try{
+            connection.setAutoCommit(false);
+            List<GamesPlayed> listofgp = GmPlayDAOImpl.retrieveByPlayerGameID(connection, playerID, gameID);
+            connection.commit();
+            return listofgp;
+        }
+        catch (Exception ex){
+            // Rollback set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public List<GamesPlayed> retrieveByGame(long gameID) throws DAOException, SQLException
     {
-        return null;
+        GamesPlayedDAO GmPlayDAOImpl = new GamesPlayedDAOImpl();
+        Connection connection = dataSource.getConnection();
+
+        try{
+            connection.setAutoCommit(false);
+            List<GamesPlayed> listofgp = GmPlayDAOImpl.retrieveByGame(connection, gameID);
+            connection.commit();
+            return listofgp;
+        }
+        catch (Exception ex){
+            // Rollback set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public List<GamesPlayed> retrieveByPlayer(long playerID) throws DAOException, SQLException
     {
-        return null;
+        GamesPlayedDAO GmPlayDAOImpl = new GamesPlayedDAOImpl();
+        Connection connection = dataSource.getConnection();
+
+        try{
+            connection.setAutoCommit(false);
+            List<GamesPlayed> listofgp = GmPlayDAOImpl.retrieveByPlayer(connection, playerID);
+            connection.commit();
+            return listofgp;
+        }
+        catch (Exception ex){
+            // Rollback set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int update(GamesPlayed gamesPlayed) throws DAOException, SQLException
     {
-        return 0;
+        GamesPlayedDAO GmPlayDAOImpl = new GamesPlayedDAOImpl();
+        Connection connection = dataSource.getConnection();
+        try{
+            connection.setAutoCommit(false);
+            int updateID = GmPlayDAOImpl.update(connection, gamesPlayed);
+            connection.commit();
+            return updateID;
+        }
+        catch (Exception ex){
+            // Rollback will set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int delete(long gamePlayedID) throws DAOException, SQLException
     {
-        return 0;
+        GamesPlayedDAO GmPlayDAOImpl = new GamesPlayedDAOImpl();
+        Connection connection = dataSource.getConnection();
+        try{
+            connection.setAutoCommit(false);
+            int deleteID = GmPlayDAOImpl.delete(connection, gamePlayedID);
+            connection.commit();
+            return deleteID;
+        }
+        catch (Exception ex){
+            // Rollback will set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int count() throws DAOException, SQLException
     {
-        return 0;
+        GamesPlayedDAO GmPlayDAOImpl = new GamesPlayedDAOImpl();
+        Connection connection = dataSource.getConnection();
+        try{
+            connection.setAutoCommit(false);
+            int countID = GmPlayDAOImpl.count(connection);
+            connection.commit();
+            return countID;
+        }
+        catch (Exception ex){
+            // Rollback will set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
 }

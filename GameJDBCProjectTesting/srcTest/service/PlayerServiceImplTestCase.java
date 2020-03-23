@@ -126,6 +126,7 @@ public class PlayerServiceImplTestCase
         int p2ccCount = p2.getCreditCards().size();
         
         p2.getCreditCards().add(buildCreditCard());
+       
         playerService.update(p2);
         
         Player p3 = playerService.retrieve(p2.getId());

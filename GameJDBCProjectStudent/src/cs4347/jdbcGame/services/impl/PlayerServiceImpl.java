@@ -73,40 +73,193 @@ public class PlayerServiceImpl implements PlayerService
     @Override
     public Player retrieve(Long playerID) throws DAOException, SQLException
     {
-        return null;
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+        CreditCardDAO ccDAO = new CreditCardDAOImpl();
+        if (playerID > 5000) {
+        	return null;
+        }
+        Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            Player p1 = playerDAO.retrieve(connection, playerID);
+            List <CreditCard> ccard = ccDAO.retrieveCreditCardsForPlayer(connection, playerID);
+            
+            p1.setCreditCards(ccard);
+            connection.commit();
+            return p1;
+        }
+        catch (Exception ex){
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int update(Player player) throws DAOException, SQLException
     {
-        return 0;
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+        CreditCardDAO ccDAO = new CreditCardDAOImpl();
+
+        Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            int result = playerDAO.update(connection, player);
+
+            //Update Credit card
+            List<CreditCard> ccard = player.getCreditCards();
+            //Delete Credit Card
+            //ccDAO.deleteForPlayer(connection, player.getId());
+            //Add updated credit card
+            for(int i = 0; i < ccard.size(); i++) {
+            	if (ccard.get(i).getId() == null) {
+            		ccDAO.create(connection, ccard.get(i), player.getId());
+            	}
+            	ccDAO.update(connection, ccard.get(i));
+            }
+            
+
+            connection.commit();
+            return result;
+        }
+        catch (Exception ex){
+            // Rollback set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int delete(Long playerID) throws DAOException, SQLException
     {
-        return 0;
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+        CreditCardDAO ccDAO = new CreditCardDAOImpl();
+
+        Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            //Delete player's credit card
+            ccDAO.deleteForPlayer(connection, playerID);
+            //Delete player and return new row count
+            int result = playerDAO.delete(connection, playerID);
+
+            connection.commit();
+            return result;
+        }
+        catch (Exception ex){
+            // Rollback set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
-    public int count() throws DAOException, SQLException
+    public int count() throws DAOException, SQLException    //THIS IS UNFINISHED
     {
-        return 0;
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+        //CreditCardDAO ccDAO = new CreditCardDAOImpl();
+
+        Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            int result = playerDAO.count(connection);
+            connection.commit();
+            return result;
+        }
+        catch (Exception ex){
+            // Rollback set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     @Override
     public List<Player> retrieveByJoinDate(Date start, Date end) throws DAOException, SQLException
     {
-        return null;
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+
+        Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            List <Player> listofp = playerDAO.retrieveByJoinDate(connection, start, end);
+            connection.commit();
+            //Return player along with credit card
+            return listofp;
+        }
+        catch (Exception ex){
+            // Rollback set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
     /**
      * Used for debugging and testing purposes.
      */
     @Override
-    public int countCreditCardsForPlayer(Long playerID) throws DAOException, SQLException
+    public int countCreditCardsForPlayer(Long playerID) throws DAOException, SQLException   //THIS IS UNFINISHED
     {
-        return 0;
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+        CreditCardDAO ccDAO = new CreditCardDAOImpl();
+
+        Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            Player p1 = playerDAO.retrieve(connection, playerID);
+            List <CreditCard> ccard = ccDAO.retrieveCreditCardsForPlayer(connection, playerID);
+            if (ccard.size() == 0) {
+            	return 0;
+            }
+            p1.setCreditCards(ccard);
+            int result = ccard.size();
+            connection.commit();
+            return result;
+        }
+        catch (Exception ex){
+            // Rollback set Autocommit back to true
+            connection.rollback();
+            throw ex;
+        }
+        finally{
+            // Autocommit set back to true in finally block
+            if (connection != null && !connection.isClosed()) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        }
     }
 
 }
